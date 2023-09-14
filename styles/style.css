@@ -1,0 +1,41 @@
+*,
+*:before,
+*:after {
+    padding: 0;
+    margin: 0;
+    border: 0;
+    box-sizing: border-box;
+}
+html,
+body {
+    height: 100%;
+}
+
+.calc {
+}
+
+.calc__container {
+    border: 2px solid black;
+    width: 1080px;
+    height: 2340px;
+    margin: 0px auto;
+    border-radius: 50px;
+}
+
+.calc__screen {
+    color: rgb(128, 203, 196, 1);
+    font-size: 80px;
+    transition-duration: 0.1s;
+}
+
+.calc__screen_blink {
+    color: rgba(128, 203, 196, 0);
+}
+
+/*buttons*/
+.calc__buttons {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    grid-template-rows: repeat(5, 1fr);
+    justify-content: end;
+}
