@@ -7,8 +7,20 @@ function blinkingAnimationFunction() {
 
 setTimeout(blinkingAnimationFunction, 500);
 
-//buttons implementation
+const toolbarDeleteImg = document.querySelector(".toolbar__delete>img");
+
+const isToolbarDeleteImgActive = () => {
+    if (calcScreenResultString) {
+        toolbarDeleteImg.src = "assets/delete.png";
+    } else {
+        toolbarDeleteImg.src = "assets/delete-active.png";
+    }
+};
+
+//global var
 let calcScreenResultString = "";
+
+//buttons implementation
 const arrayOfOperators = ["*", "/", "+", "-", "%", "."];
 const buttonsGridContainer = document.querySelector(".calc__buttons");
 const calcScreenResult = document.querySelector(".screen__result");
@@ -17,8 +29,11 @@ buttonsGridContainer.addEventListener("click", (event) => {
     if (!event.target.classList.contains("button__item")) {
         return;
     }
+    isToolbarDeleteImgActive();
     if (event.target.classList.contains("button__item_unique-equal")) {
-        calcScreenResult.textContent = eval(calcScreenResultString);
+        try {
+            calcScreenResult.textContent = eval(calcScreenResultString);
+        } catch (error) {}
         return;
     }
     const temporaryConcatValue =
@@ -35,7 +50,7 @@ buttonsGridContainer.addEventListener("click", (event) => {
         arrayOfOperators.includes(temporaryConcatValue) &&
         arrayOfOperators.includes(calcScreenResultString.slice(-1).toString())
     ) {
-        return;
+        calcScreenResultString = calcScreenResultString.slice(0, -1);
     }
     if (temporaryConcatValue) {
         calcScreenResultString += temporaryConcatValue;

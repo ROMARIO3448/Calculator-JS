@@ -11,9 +11,6 @@ body {
     height: 100%;
 }
 
-.calc {
-}
-
 .calc__container {
     border: 2px solid black;
     width: 1080px;
@@ -63,7 +60,7 @@ body {
     grid-template-rows: repeat(1, 1fr);
     height: 237px;
     width: 100%;
-    border-bottom: 1px grey solid;
+    border-bottom: 1px rgb(232, 232, 232) solid;
     align-items: center;
     justify-items: center;
 }
@@ -94,4 +91,11 @@ body {
     user-select: none;
     cursor: pointer;
     font-size: 100px;
+    transition-duration: 0.2s;
+    transition-property: font-size, filter;
+}
+
+.button__item:active {
+    filter: brightness(90%);
+    font-size: 70px;
 }
