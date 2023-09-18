@@ -9,6 +9,7 @@
 html,
 body {
     height: 100%;
+    min-width: 1080px;
 }
 
 .calc__container {
@@ -25,14 +26,15 @@ body {
 }
 
 .calc__screen {
+    position: relative;
     display: grid;
     grid-template-columns: repeat(1, 1fr);
     grid-template-rows: repeat(2, 1fr);
     height: 650px;
     width: 100%;
-    border: 1px purple solid;
     align-items: end;
     justify-items: end;
+    overflow: auto;
 }
 
 .screen__input {
@@ -51,6 +53,10 @@ body {
 .screen__result {
     font-size: 100px;
     color: grey;
+}
+
+.input__main_green {
+    color: green;
 }
 
 /*toolbar*/
@@ -98,4 +104,49 @@ body {
 .button__item:active {
     filter: brightness(90%);
     font-size: 70px;
+}
+
+.button__item_red {
+    color: red;
+}
+
+.button__item_green {
+    color: green;
+}
+
+.button__item_bold-green {
+    color: green;
+    font-weight: bold;
+}
+
+.button__item_unique-equal {
+    color: white;
+    background-color: rgb(66, 166, 16);
+    font-weight: bold;
+}
+
+.calc__invalid-operation {
+    position: relative;
+    z-index: 10;
+    bottom: 15%;
+    margin-left: auto;
+    margin-right: auto;
+    width: 450px;
+    height: 90px;
+    background-color: rgba(92, 92, 92, 255);
+    color: white;
+    font-size: 55px;
+    text-align: center;
+    line-height: 129px;
+    border-radius: 60px 60px 60px 60px;
+    visibility: hidden;
+    transition-duration: 0.1s;
+    opacity: 0;
+}
+
+.calc__invalid-operation_visible {
+    visibility: visible;
+    width: 508px;
+    height: 129px;
+    opacity: 0.95;
 }
