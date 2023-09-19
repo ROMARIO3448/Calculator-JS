@@ -35,10 +35,12 @@ body {
     align-items: end;
     justify-items: end;
     overflow: auto;
+    user-select: none; /*temporary solution*/
+    padding: 0px 40px 40px 40px;
 }
 
 .screen__input {
-    font-size: 150px;
+    font-size: 120px;
 }
 
 .input__placeholder {
@@ -51,7 +53,7 @@ body {
 }
 
 .screen__result {
-    font-size: 100px;
+    font-size: 75px;
     color: grey;
 }
 
@@ -69,8 +71,10 @@ body {
     border-bottom: 1px rgb(232, 232, 232) solid;
     align-items: center;
     justify-items: center;
+    user-select: none;
 }
 .toolbar__delete {
+    cursor: pointer;
     grid-column-start: 5;
     grid-column-end: 6;
 }

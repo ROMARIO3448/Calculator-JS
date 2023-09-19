@@ -7,6 +7,29 @@ function blinkingAnimationFunction() {
 
 setTimeout(blinkingAnimationFunction, 500);
 
+const calcScreenContainer = document.querySelector(".calc__screen");
+const changeFontSizeForCalcScreenInput = () => {
+    const currentFontSizeOfCalcScreenContainer =
+        getComputedStyle(calcScreenInput);
+    //.calc__screen {padding: 0px 40px 40px 40px;} +20px buffer = total 100px
+    if (
+        calcScreenInput.offsetWidth >= calcScreenContainer.clientWidth - 100 &&
+        parseInt(currentFontSizeOfCalcScreenContainer.fontSize) > 80
+    ) {
+        const newFontSize =
+            parseInt(currentFontSizeOfCalcScreenContainer.fontSize) - 20 + "px";
+        console.log(newFontSize);
+        calcScreenInput.style.fontSize = newFontSize;
+        calcScreenPlaceholder.style.fontSize = newFontSize;
+    } else if (
+        calcScreenInput.offsetWidth >= calcScreenContainer.clientWidth - 100 &&
+        parseInt(currentFontSizeOfCalcScreenContainer.fontSize) === 80
+    ) {
+        //implemet transition to a new line
+    } else {
+    }
+};
+
 let calcScreenResultString = "";
 let isFirstOperatorInExpression = false;
 
@@ -50,9 +73,7 @@ const toolbarSwitchImgHandler = () => {
         toolbarDeleteImg.src = "assets/delete-active.png";
     }
 };
-toolbarGridContainer.addEventListener("click", (event) => {
-    toolbarDeleteImgHandler(event);
-});
+toolbarGridContainer.addEventListener("click", toolbarDeleteImgHandler);
 
 let changeInputColor = false;
 const changeCalcScreenInputColor = () => {
@@ -122,6 +143,7 @@ const flagForToolbarFalseLogic = () => {
     toolbarSwitchImgHandler();
 
     calcScreenInput.textContent = calcScreenResultString;
+    changeFontSizeForCalcScreenInput();
 };
 
 const areOperatorsFollowEachOther = (temporaryConcatChar) => {
@@ -211,6 +233,7 @@ const flagForToolbarTrueLogic = (event) => {
     toolbarSwitchImgHandler();
 
     calcScreenInput.textContent = calcScreenResultString;
+    changeFontSizeForCalcScreenInput();
 };
 
 const calcLogicHandler = (event) => {
