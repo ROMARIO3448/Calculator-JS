@@ -7,28 +7,99 @@ function blinkingAnimationFunction() {
 
 setTimeout(blinkingAnimationFunction, 500);
 
+//TODO REFACTOR
+let arrayOfWhenToUndoFontSize = [
+    ["100px", 0, "120px"],
+    ["80px", 0, "100px"],
+];
+const minFontSize = 80;
+const maxFontSize = 120;
+const stepOfFontSizeReducing = 20;
 const calcScreenContainer = document.querySelector(".calc__screen");
-const changeFontSizeForCalcScreenInput = () => {
+const preventScrollPixelsBuffer = 100;
+let formerHeightOfCalcScreenInputBoundingClientRect = null;
+const changeFontSizeForCalcScreenInput = (flag = true) => {
     const currentFontSizeOfCalcScreenContainer =
         getComputedStyle(calcScreenInput);
+    const calcScreenInputBoundingClientRect =
+        calcScreenInput.getBoundingClientRect();
+    let flagForFormerHeightOfCalcScreenInputBoundingClientRect = true;
+
+    const hasHeightAutoChanged =
+        formerHeightOfCalcScreenInputBoundingClientRect &&
+        formerHeightOfCalcScreenInputBoundingClientRect !=
+            calcScreenInputBoundingClientRect.height;
+
     //.calc__screen {padding: 0px 40px 40px 40px;} +20px buffer = total 100px
-    if (
-        calcScreenInput.offsetWidth >= calcScreenContainer.clientWidth - 100 &&
-        parseInt(currentFontSizeOfCalcScreenContainer.fontSize) > 80
-    ) {
-        const newFontSize =
-            parseInt(currentFontSizeOfCalcScreenContainer.fontSize) - 20 + "px";
-        console.log(newFontSize);
-        calcScreenInput.style.fontSize = newFontSize;
-        calcScreenPlaceholder.style.fontSize = newFontSize;
-    } else if (
-        calcScreenInput.offsetWidth >= calcScreenContainer.clientWidth - 100 &&
-        parseInt(currentFontSizeOfCalcScreenContainer.fontSize) === 80
-    ) {
-        //implemet transition to a new line
+    if (flag) {
+        if (
+            calcScreenInputBoundingClientRect.width >=
+                calcScreenContainer.clientWidth - preventScrollPixelsBuffer &&
+            parseInt(currentFontSizeOfCalcScreenContainer.fontSize) >
+                minFontSize
+        ) {
+            const newFontSize =
+                parseInt(currentFontSizeOfCalcScreenContainer.fontSize) -
+                stepOfFontSizeReducing +
+                "px";
+            calcScreenInput.style.fontSize = newFontSize;
+            calcScreenPlaceholder.style.fontSize = newFontSize;
+            //we need this only to notice auto size changes... not intentional changes
+            flagForFormerHeightOfCalcScreenInputBoundingClientRect = false;
+            switch (newFontSize) {
+                case arrayOfWhenToUndoFontSize[0][0]:
+                    arrayOfWhenToUndoFontSize[0][1] =
+                        calcScreenInput.textContent.length;
+                    break;
+                case arrayOfWhenToUndoFontSize[1][0]:
+                    arrayOfWhenToUndoFontSize[1][1] =
+                        calcScreenInput.textContent.length;
+                    break;
+                default:
+            }
+        } else if (
+            calcScreenInputBoundingClientRect.width >=
+                calcScreenContainer.clientWidth - preventScrollPixelsBuffer &&
+            parseInt(currentFontSizeOfCalcScreenContainer.fontSize) ===
+                minFontSize
+        ) {
+            //implemet transition to a new line
+        } else {
+        }
+    } //if flag
+    else {
+        if (
+            arrayOfWhenToUndoFontSize[1][1] &&
+            arrayOfWhenToUndoFontSize[1][1] > calcScreenInput.textContent.length
+        ) {
+            calcScreenInput.style.fontSize = arrayOfWhenToUndoFontSize[1][2];
+            calcScreenPlaceholder.style.fontSize =
+                arrayOfWhenToUndoFontSize[1][2];
+            arrayOfWhenToUndoFontSize[1][1] = null;
+            //we need this only to notice auto size changes... not intentional changes
+            flagForFormerHeightOfCalcScreenInputBoundingClientRect = false;
+        } else if (
+            !arrayOfWhenToUndoFontSize[1][1] &&
+            arrayOfWhenToUndoFontSize[0][1] &&
+            arrayOfWhenToUndoFontSize[0][1] > calcScreenInput.textContent.length
+        ) {
+            calcScreenInput.style.fontSize = arrayOfWhenToUndoFontSize[0][2];
+            calcScreenPlaceholder.style.fontSize =
+                arrayOfWhenToUndoFontSize[0][2];
+            arrayOfWhenToUndoFontSize[0][1] = null;
+            //we need this only to notice auto size changes... not intentional changes
+            flagForFormerHeightOfCalcScreenInputBoundingClientRect = false;
+        }
+    }
+
+    if (flagForFormerHeightOfCalcScreenInputBoundingClientRect) {
+        formerHeightOfCalcScreenInputBoundingClientRect =
+            calcScreenInputBoundingClientRect.height;
     } else {
+        formerHeightOfCalcScreenInputBoundingClientRect = null;
     }
 };
+//TODO REFACTOR
 
 let calcScreenResultString = "";
 let isFirstOperatorInExpression = false;
@@ -143,7 +214,7 @@ const flagForToolbarFalseLogic = () => {
     toolbarSwitchImgHandler();
 
     calcScreenInput.textContent = calcScreenResultString;
-    changeFontSizeForCalcScreenInput();
+    changeFontSizeForCalcScreenInput(false);
 };
 
 const areOperatorsFollowEachOther = (temporaryConcatChar) => {
@@ -233,6 +304,7 @@ const flagForToolbarTrueLogic = (event) => {
     toolbarSwitchImgHandler();
 
     calcScreenInput.textContent = calcScreenResultString;
+
     changeFontSizeForCalcScreenInput();
 };
 

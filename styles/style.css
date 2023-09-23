@@ -41,6 +41,8 @@ body {
 
 .screen__input {
     font-size: 120px;
+    /*The content in the element will not be wrapped to a new line unless explicitly specified*/
+    white-space: nowrap;
 }
 
 .input__placeholder {
