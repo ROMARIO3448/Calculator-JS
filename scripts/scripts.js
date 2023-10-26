@@ -11,6 +11,9 @@ const calcScreenInput = document.querySelector(".input__main");
 const calcScreenResult = document.querySelector(".screen__result");
 const calcScreenContainer = document.querySelector(".calc__screen");
 
+const regexpListOfOperators = /[/\-+*%]/;
+const regexpDivideByZero = /\/0/;
+
 const arrayOfOperators = ["*", "/", "+", "-", "%"];
 const arrayOfOperatorsWhichShouldNotFollowEachOther = [
     "*",
@@ -21,8 +24,10 @@ const arrayOfOperatorsWhichShouldNotFollowEachOther = [
     ".",
 ];
 
+const invalidOperationsList = ["Invalid format used.", "Can't divide by zero."];
 const invalidFormatUsed = document.querySelector(".calc__invalid-operation");
-const evalErrorHandler = () => {
+const evalErrorHandler = (invalidOperationName = invalidOperationsList[0]) => {
+    invalidFormatUsed.textContent = invalidOperationName;
     invalidFormatUsed.classList.add("calc__invalid-operation_visible");
     setTimeout(() => {
         invalidFormatUsed.classList.remove("calc__invalid-operation_visible");
@@ -122,6 +127,10 @@ const changeFontSizeForCalcScreenInput = (flag = true) => {
     }
 };
 
+const toolbarScientificModeImg = document.querySelector(
+    ".toolbar__scientific-mode>img"
+);
+const calcContainer = document.querySelector(".calc__container");
 const toolbarDeleteImg = document.querySelector(".toolbar__delete>img");
 const toolbarGridContainer = document.querySelector(".calc__toolbar");
 let flagForToolbar = false;
@@ -131,6 +140,8 @@ const toolbarDeleteImgHandler = (event) => {
             flagForToolbar = true;
             buttonsGridContainer.click();
         }
+    } else if (event.target.closest(".toolbar__scientific-mode>img")) {
+        redirectAfterRotation();
     }
 };
 const toolbarSwitchImgHandler = () => {
@@ -140,16 +151,61 @@ const toolbarSwitchImgHandler = () => {
         toolbarDeleteImg.src = "assets/delete-active.png";
     }
 };
+const redirectAfterRotation = () => {
+    calcContainer.classList.add("calc__container_rotation");
+    //temporary solution
+    setTimeout(() => {
+        window.location.href = "./scientific-mode.html";
+    }, 250);
+
+    //TODO sometimes the rotation hasn't ended but redirection had already started
+    //it is necessary to fix this before uncommenting the following code
+    /*calcContainer.addEventListener(
+        "transitionend",
+        () => {
+            window.location.href = "./scientific-mode.html";
+        },
+        {
+            once: true,
+        }
+    );*/
+};
 toolbarGridContainer.addEventListener("click", toolbarDeleteImgHandler);
 
 let isFirstOperatorInExpression = false;
 const checkStillContainsOperators = () => {
-    isFirstOperatorInExpression = /[*+-/%]/.test(
+    isFirstOperatorInExpression = regexpListOfOperators.test(
         calcScreenInput.textContent.toString()
     );
 };
 
+const regexpAllowDivideByZeroIf = [/0\.[1-9]{1,}/, /0\.0{1,}[1-9]{1,}/];
+const allowDivideByZeroIf = (temporaryConcatChar = "") => {
+    const arrayOfNumbers = (calcScreenInput.textContent + temporaryConcatChar)
+        .toString()
+        .split(regexpListOfOperators);
+    return arrayOfNumbers.some((elem) => {
+        return (
+            regexpAllowDivideByZeroIf[0].test(elem) ||
+            regexpAllowDivideByZeroIf[1].test(elem)
+        );
+    });
+};
 const correctDisplayOfScreenResults = (flag, temporaryConcatChar = "") => {
+    //prevent calcScreenResult output if /0 is in expression
+    if (
+        regexpDivideByZero.test(calcScreenInput.textContent.toString()) ||
+        regexpDivideByZero.test(
+            calcScreenInput.textContent.toString() + temporaryConcatChar
+        )
+    ) {
+        if (allowDivideByZeroIf(temporaryConcatChar)) {
+        } else {
+            calcScreenResult.textContent = "";
+            return;
+        }
+    }
+
     let condition;
     if (!flag) {
         condition =
@@ -177,6 +233,32 @@ const correctDisplayOfScreenResults = (flag, temporaryConcatChar = "") => {
         }
     } else {
         calcScreenResult.textContent = "";
+    }
+};
+
+const ifOperatorConctatElseClear = (event) => {
+    if (event.target.textContent.trim() === "=") {
+        //TODO behaviour in samsung calculator is different
+        //if input was 3+5+1 and you press equal, the result
+        //will be 9 and every next equal will add 1 to the result
+        return;
+    }
+    if (changeInputColor) {
+        let temporaryChar =
+            event.target.textContent.trim() === "÷"
+                ? "/"
+                : event.target.textContent.trim() === "x"
+                ? "*"
+                : event.target.textContent.trim();
+        if (event.target.textContent.trim() === ",") {
+            calcScreenInput.textContent = "0";
+            return;
+        }
+        if (regexpListOfOperators.test(temporaryChar)) {
+            return;
+        } else {
+            calcScreenInput.textContent = "";
+        }
     }
 };
 
@@ -225,18 +307,25 @@ const areOperatorsFollowEachOther = (temporaryConcatChar) => {
 
 const equalButtonHandler = () => {
     if (isFirstOperatorInExpression) {
-        try {
-            calcScreenInput.textContent = eval(calcScreenInput.textContent);
-            calcScreenResult.textContent = "";
-            isFirstOperatorInExpression = false;
-            calcScreenInput.classList.add("input__main_green");
-            changeInputColor = true;
-            arrayOfWhenToUndoFontSize[0][1] = null;
-            arrayOfWhenToUndoFontSize[1][1] = null;
-            calcScreenInput.style.fontSize = maxFontSize + "px";
-            calcScreenPlaceholder.style.fontSize = maxFontSize + "px";
-        } catch (error) {
-            evalErrorHandler();
+        if (
+            regexpDivideByZero.test(calcScreenInput.textContent.toString()) &&
+            !allowDivideByZeroIf()
+        ) {
+            evalErrorHandler(invalidOperationsList[1]);
+        } else {
+            try {
+                calcScreenInput.textContent = eval(calcScreenInput.textContent);
+                calcScreenResult.textContent = "";
+                isFirstOperatorInExpression = false;
+                calcScreenInput.classList.add("input__main_green");
+                changeInputColor = true;
+                arrayOfWhenToUndoFontSize[0][1] = null;
+                arrayOfWhenToUndoFontSize[1][1] = null;
+                calcScreenInput.style.fontSize = maxFontSize + "px";
+                calcScreenPlaceholder.style.fontSize = maxFontSize + "px";
+            } catch (error) {
+                evalErrorHandler();
+            }
         }
     }
 };
@@ -252,9 +341,19 @@ const clearButtonHandler = () => {
     calcScreenPlaceholder.style.fontSize = maxFontSize + "px";
 };
 
+const avoidInvalidNumbersAndOperations = (temporaryConcatChar) => {
+    const arrayOfNumbers = (calcScreenInput.textContent + temporaryConcatChar)
+        .toString()
+        .split(regexpListOfOperators);
+    return arrayOfNumbers.some((elem) => {
+        return /^0\d/.test(elem) || /^-{0,}\d{1,}\.{1,}\d{1,}\.{1,}/.test(elem);
+    });
+};
+
 const listOfNotImplementedButtons = ["+/-", "()"];
 
 const flagForToolbarTrueLogic = (event) => {
+    ifOperatorConctatElseClear(event);
     changeCalcScreenInputColor();
 
     if (event.target.classList.contains("button__item_unique-equal")) {
@@ -291,6 +390,10 @@ const flagForToolbarTrueLogic = (event) => {
         temporaryConcatChar = "";
         evalErrorHandler();
     }
+
+    temporaryConcatChar = avoidInvalidNumbersAndOperations(temporaryConcatChar)
+        ? ""
+        : temporaryConcatChar;
 
     correctDisplayOfScreenResults(true, temporaryConcatChar);
 
