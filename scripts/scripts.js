@@ -38,6 +38,7 @@ const arrayOfWhenToUndoFontSize = [
     ["100px", null, "120px"],
     ["80px", null, "100px"],
 ];
+const arrayOfWhenToUndoNewLine = [];
 const minFontSize = 80;
 const maxFontSize = 120;
 const stepOfFontSizeReducing = 20;
@@ -82,6 +83,24 @@ const calcScreenOverflovMinFontSizeHandler = () => {
         .toString()
         .slice(0, sliceNum);
     calcScreenInput.insertAdjacentHTML("beforeend", `<br/>${tempVar}`);
+    arrayOfWhenToUndoNewLine.push(calcScreenInput.textContent.length);
+};
+const undoNewLineHandler = () => {
+    if (arrayOfWhenToUndoNewLine.length === 0) {
+        return;
+    }
+    if (
+        arrayOfWhenToUndoNewLine[arrayOfWhenToUndoNewLine.length - 1] >
+        calcScreenInput.textContent.length
+    ) {
+        arrayOfWhenToUndoNewLine.pop();
+        const lastIndexOfBr = calcScreenInput.innerHTML.lastIndexOf("<br>");
+        calcScreenInput.innerHTML =
+            calcScreenInput.innerHTML.toString().slice(0, lastIndexOfBr) +
+            calcScreenInput.textContent
+                .toString()
+                .slice(lastIndexOfBr + 4 - calcScreenInput.innerHTML.length);
+    }
 };
 const undoFontSizeHandler = () => {
     if (
@@ -124,6 +143,7 @@ const changeFontSizeForCalcScreenInput = (flag = true) => {
         }
     } else {
         undoFontSizeHandler();
+        undoNewLineHandler();
     }
 };
 
@@ -171,6 +191,27 @@ const redirectAfterRotation = () => {
     );*/
 };
 toolbarGridContainer.addEventListener("click", toolbarDeleteImgHandler);
+let isToolbarDeleteImgActive = false;
+const emulateClick = () => {
+    let timeId = setTimeout(emulateClick, 50);
+    if (!isToolbarDeleteImgActive) {
+        clearTimeout(timeId);
+    } else {
+        toolbarDeleteImg.click();
+    }
+};
+toolbarGridContainer.addEventListener("mousedown", (event) => {
+    if (event.target.closest(".toolbar__delete>img")) {
+        isToolbarDeleteImgActive = true;
+        setTimeout(emulateClick, 500);
+    }
+});
+calcContainer.addEventListener("mouseup", () => {
+    isToolbarDeleteImgActive = false;
+});
+calcContainer.addEventListener("mouseleave", () => {
+    isToolbarDeleteImgActive = false;
+});
 
 let isFirstOperatorInExpression = false;
 const checkStillContainsOperators = () => {
@@ -274,11 +315,6 @@ const flagForToolbarFalseLogic = () => {
     calcScreenInput.innerHTML = calcScreenInput.innerHTML
         .toString()
         .slice(0, -1);
-    if (/<br>$/.test(calcScreenInput.innerHTML.toString())) {
-        calcScreenInput.innerHTML = calcScreenInput.innerHTML
-            .toString()
-            .slice(0, -4);
-    }
 
     flagForToolbar = false;
 
