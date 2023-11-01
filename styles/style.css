@@ -23,6 +23,12 @@ body {
     margin: 0px auto;
     border-radius: 50px;
     overflow: hidden;
+    transition-duration: 0.25s;
+    transition-timing-function: ease-in;
+}
+
+.calc__container_rotation {
+    transform: rotate(0.25turn);
 }
 
 .calc__screen {
@@ -80,6 +86,9 @@ body {
     cursor: pointer;
     grid-column-start: 5;
     grid-column-end: 6;
+}
+.toolbar__scientific-mode {
+    cursor: pointer;
 }
 
 /*buttons*/
