@@ -67,14 +67,12 @@ body {
     grid-template-columns: repeat(1, 1fr);
     grid-template-rows: 3em 3em;
     user-select: none;
-    border: 1px solid black;
 }
 
 .screen__input {
     font-size: 1em;
     white-space: nowrap;
     text-align: end;
-    border: 1px solid black;
     align-self: end;
 }
 
@@ -82,7 +80,6 @@ body {
     font-size: 1em;
     color: rgb(128, 203, 196, 1);
     transition-duration: 0.1s;
-    border: 1px solid black;
 }
 
 .input__placeholder_blink {
@@ -97,7 +94,6 @@ body {
     font-size: 0.625em;
     color: grey;
     text-align: end;
-    border: 1px solid black;
     align-self: center;
 }
 
@@ -110,12 +106,7 @@ body {
     border-bottom: 1px rgb(232, 232, 232) solid;
     justify-items: stretch;
     user-select: none;
-    border: 1px solid black;
     margin-bottom: 1em;
-}
-
-.calc__toolbar div {
-    border: 1px solid black;
 }
 
 .calc__toolbar > div {
@@ -126,7 +117,6 @@ body {
 
 .calc__toolbar img {
     cursor: pointer;
-    border: 1px solid black;
     width: 40%;
 }
 
@@ -142,7 +132,6 @@ body {
     grid-template-rows: repeat(5, 2em);
     column-gap: 3%;
     row-gap: 0.3em;
-    border: 1px solid black;
     align-items: stretch;
     justify-items: stretch;
 }
@@ -157,7 +146,6 @@ body {
     cursor: pointer;
     transition-duration: 0.2s;
     transition-property: font-size, filter;
-    border: 1px solid black;
 }
 
 .button__item:active {
