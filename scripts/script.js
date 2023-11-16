@@ -1,3 +1,53 @@
+/*Dynamic adaptive section*/
+const container = document.querySelector("._container");
+const calcScreen = document.querySelector(".calc__screen");
+const calcToolbar = document.querySelector(".calc__toolbar");
+const calcButtons = document.querySelector(".calc__buttons");
+const calcInvalidOperation = document.querySelector(".calc__invalid-operation");
+
+/*const setFontSizeAndPaddingDependingOnContainerWidth = () => {
+    const ratioBetweenContainerWidthAndFontSizeForCalcScreen = 120 / 1080;
+    const ratioBetweenContainerWidthAndFontSizeForCalcToolbar = 100 / 1080;
+    const ratioBetweenContainerWidthAndFontSizeForCalcButtons = 100 / 1080;
+    const ratioBetweenContainerWidthAndContainerPadding = 128 / 1080;
+    const ratioBetweenContainerWidthAndFontSizeForCalcInvalidOperation =
+        55 / 1080;
+
+    const newConatinerPadding =
+        (container.clientWidth *
+            ratioBetweenContainerWidthAndContainerPadding) /
+            2 +
+        "px";
+
+    container.style.paddingLeft = newConatinerPadding;
+    container.style.paddingRight = newConatinerPadding;
+
+    calcScreen.style.fontSize =
+        container.clientWidth *
+            ratioBetweenContainerWidthAndFontSizeForCalcScreen +
+        "px";
+    calcToolbar.style.fontSize =
+        container.clientWidth *
+            ratioBetweenContainerWidthAndFontSizeForCalcToolbar +
+        "px";
+    calcButtons.style.fontSize =
+        container.clientWidth *
+            ratioBetweenContainerWidthAndFontSizeForCalcButtons +
+        "px";
+    calcInvalidOperation.style.fontSize =
+        container.clientWidth *
+            ratioBetweenContainerWidthAndFontSizeForCalcInvalidOperation +
+        "px";
+};
+
+window.addEventListener(
+    "resize",
+    setFontSizeAndPaddingDependingOnContainerWidth
+);
+
+setFontSizeAndPaddingDependingOnContainerWidth();*/
+/*End of dynamic adaptive*/
+
 const calcScreenPlaceholder = document.querySelector(".input__placeholder");
 
 function blinkingAnimationFunction() {
@@ -6,10 +56,8 @@ function blinkingAnimationFunction() {
 
 setInterval(blinkingAnimationFunction, 500);
 
-const buttonsGridContainer = document.querySelector(".calc__buttons");
 const calcScreenInput = document.querySelector(".input__main");
 const calcScreenResult = document.querySelector(".screen__result");
-const calcScreenContainer = document.querySelector(".calc__screen");
 
 const regexpListOfOperators = /[/\-+*%]/;
 const regexpDivideByZero = /\/0/;
@@ -25,12 +73,13 @@ const arrayOfOperatorsWhichShouldNotFollowEachOther = [
 ];
 
 const invalidOperationsList = ["Invalid format used.", "Can't divide by zero."];
-const invalidFormatUsed = document.querySelector(".calc__invalid-operation");
 const evalErrorHandler = (invalidOperationName = invalidOperationsList[0]) => {
-    invalidFormatUsed.textContent = invalidOperationName;
-    invalidFormatUsed.classList.add("calc__invalid-operation_visible");
+    calcInvalidOperation.textContent = invalidOperationName;
+    calcInvalidOperation.classList.add("calc__invalid-operation_visible");
     setTimeout(() => {
-        invalidFormatUsed.classList.remove("calc__invalid-operation_visible");
+        calcInvalidOperation.classList.remove(
+            "calc__invalid-operation_visible"
+        );
     }, 1000);
 };
 
@@ -95,6 +144,12 @@ const undoNewLineHandler = () => {
     ) {
         arrayOfWhenToUndoNewLine.pop();
         const lastIndexOfBr = calcScreenInput.innerHTML.lastIndexOf("<br>");
+        if (lastIndexOfBr + 4 === calcScreenInput.innerHTML.length) {
+            calcScreenInput.innerHTML = calcScreenInput.innerHTML
+                .toString()
+                .slice(0, lastIndexOfBr);
+            return;
+        }
         calcScreenInput.innerHTML =
             calcScreenInput.innerHTML.toString().slice(0, lastIndexOfBr) +
             calcScreenInput.textContent
@@ -128,14 +183,14 @@ const changeFontSizeForCalcScreenInput = (flag = true) => {
     if (flag) {
         if (
             calcScreenInputBoundingClientRect.width >=
-                calcScreenContainer.clientWidth - preventScrollPixelsBuffer &&
+                calcScreen.clientWidth - preventScrollPixelsBuffer &&
             parseInt(currentFontSizeOfCalcScreenContainer.fontSize) >
                 minFontSize
         ) {
             calcScreenOverflovHandler(currentFontSizeOfCalcScreenContainer);
         } else if (
             calcScreenInputBoundingClientRect.width >=
-                calcScreenContainer.clientWidth - preventScrollPixelsBuffer &&
+                calcScreen.clientWidth - preventScrollPixelsBuffer &&
             parseInt(currentFontSizeOfCalcScreenContainer.fontSize) ===
                 minFontSize
         ) {
@@ -152,13 +207,12 @@ const toolbarScientificModeImg = document.querySelector(
 );
 const calcContainer = document.querySelector(".calc__container");
 const toolbarDeleteImg = document.querySelector(".toolbar__delete>img");
-const toolbarGridContainer = document.querySelector(".calc__toolbar");
 let flagForToolbar = false;
 const toolbarDeleteImgHandler = (event) => {
     if (event.target.closest(".toolbar__delete>img")) {
         if (calcScreenInput.textContent) {
             flagForToolbar = true;
-            buttonsGridContainer.click();
+            calcButtons.click();
         }
     } else if (event.target.closest(".toolbar__scientific-mode>img")) {
         redirectAfterRotation();
@@ -190,7 +244,7 @@ const redirectAfterRotation = () => {
         }
     );*/
 };
-toolbarGridContainer.addEventListener("click", toolbarDeleteImgHandler);
+calcToolbar.addEventListener("click", toolbarDeleteImgHandler);
 let isToolbarDeleteImgActive = false;
 const emulateClick = () => {
     let timeId = setTimeout(emulateClick, 50);
@@ -200,7 +254,7 @@ const emulateClick = () => {
         toolbarDeleteImg.click();
     }
 };
-toolbarGridContainer.addEventListener("mousedown", (event) => {
+calcToolbar.addEventListener("mousedown", (event) => {
     if (event.target.closest(".toolbar__delete>img")) {
         isToolbarDeleteImgActive = true;
         setTimeout(emulateClick, 500);
@@ -454,4 +508,4 @@ const calcLogicHandler = (event) => {
     }
 };
 
-buttonsGridContainer.addEventListener("click", calcLogicHandler);
+calcButtons.addEventListener("click", calcLogicHandler);
