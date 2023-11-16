@@ -5,7 +5,7 @@ const calcToolbar = document.querySelector(".calc__toolbar");
 const calcButtons = document.querySelector(".calc__buttons");
 const calcInvalidOperation = document.querySelector(".calc__invalid-operation");
 
-/*const setFontSizeAndPaddingDependingOnContainerWidth = () => {
+const setFontSizeAndPaddingDependingOnContainerWidth = () => {
     const ratioBetweenContainerWidthAndFontSizeForCalcScreen = 120 / 1080;
     const ratioBetweenContainerWidthAndFontSizeForCalcToolbar = 100 / 1080;
     const ratioBetweenContainerWidthAndFontSizeForCalcButtons = 100 / 1080;
@@ -45,7 +45,7 @@ window.addEventListener(
     setFontSizeAndPaddingDependingOnContainerWidth
 );
 
-setFontSizeAndPaddingDependingOnContainerWidth();*/
+setFontSizeAndPaddingDependingOnContainerWidth();
 /*End of dynamic adaptive*/
 
 const calcScreenPlaceholder = document.querySelector(".input__placeholder");

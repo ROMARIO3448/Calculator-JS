@@ -68,7 +68,6 @@ body {
     grid-template-rows: 3em 3em;
     user-select: none;
     border: 1px solid black;
-    font-size: 120px;
 }
 
 .screen__input {
@@ -113,7 +112,6 @@ body {
     user-select: none;
     border: 1px solid black;
     margin-bottom: 1em;
-    font-size: 100px;
 }
 
 .calc__toolbar div {
@@ -147,7 +145,6 @@ body {
     border: 1px solid black;
     align-items: stretch;
     justify-items: stretch;
-    font-size: 100px;
 }
 
 .button__item {
@@ -202,7 +199,6 @@ body {
     height: 1.6em;
     background-color: rgba(92, 92, 92, 255);
     color: white;
-    font-size: 55px;
     text-align: center;
     white-space: nowrap;
     border-radius: 1.1em 1.1em 1.1em 1.1em;
