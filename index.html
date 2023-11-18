@@ -2,15 +2,14 @@
 <html lang="en">
     <head>
         <meta charset="UTF-8" />
-        <meta name="viewport" content="width=1080, initial-scale=1.0" />
-        <link rel="stylesheet" href="styles/style.css" />
-        <title>Calculator-JS</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <link rel="stylesheet" href="./styles/style.css" />
+        <title>Calc JS</title>
     </head>
     <body>
-        <header></header>
-        <main>
+        <div class="wrapper">
             <div class="calc">
-                <div class="calc__container">
+                <div class="calc__container _container">
                     <div class="calc__screen screen">
                         <div class="screen__input">
                             <span class="input__main"></span
@@ -18,6 +17,7 @@
                         </div>
                         <p class="screen__result"></p>
                     </div>
+
                     <div class="calc__toolbar toolbar">
                         <div class="toolbar__history">
                             <img
@@ -48,6 +48,7 @@
                             />
                         </div>
                     </div>
+
                     <div class="calc__buttons button">
                         <div class="button__item button__item_red">C</div>
                         <div class="button__item button__item_green">()</div>
@@ -87,8 +88,7 @@
                     <div class="calc__invalid-operation"></div>
                 </div>
             </div>
-        </main>
-        <footer></footer>
+        </div>
         <script src="scripts/script.js"></script>
     </body>
 </html>
