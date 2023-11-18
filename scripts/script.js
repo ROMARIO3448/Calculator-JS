@@ -5,6 +5,43 @@ const calcToolbar = document.querySelector(".calc__toolbar");
 const calcButtons = document.querySelector(".calc__buttons");
 const calcInvalidOperation = document.querySelector(".calc__invalid-operation");
 
+const calcScreenInput = document.querySelector(".input__main");
+const calcScreenPlaceholder = document.querySelector(".input__placeholder");
+
+let stepOfFontSizeReducing;
+let preventScrollPixelsBuffer;
+const arrayOfWhenToUndoFontSize = [];
+
+const calcScreenInputAndCalcScreenPlaceholderAdaptive = () => {
+    switch (arrayOfWhenToUndoFontSize.length) {
+        case 0:
+            calcScreenInput.style.fontSize = calcScreen.style.fontSize;
+            calcScreenPlaceholder.style.fontSize = calcScreen.style.fontSize;
+            break;
+        case 1:
+            calcScreenInput.style.fontSize =
+                parseFloat(calcScreen.style.fontSize) -
+                stepOfFontSizeReducing +
+                "px";
+            calcScreenPlaceholder.style.fontSize =
+                parseFloat(calcScreen.style.fontSize) -
+                stepOfFontSizeReducing +
+                "px";
+            break;
+        case 2:
+            calcScreenInput.style.fontSize =
+                parseFloat(calcScreen.style.fontSize) -
+                stepOfFontSizeReducing * 2 +
+                "px";
+            calcScreenPlaceholder.style.fontSize =
+                parseFloat(calcScreen.style.fontSize) -
+                stepOfFontSizeReducing * 2 +
+                "px";
+            break;
+        default:
+    }
+};
+
 const setFontSizeAndPaddingDependingOnContainerWidth = () => {
     const ratioBetweenContainerWidthAndFontSizeForCalcScreen = 120 / 1080;
     const ratioBetweenContainerWidthAndFontSizeForCalcToolbar = 100 / 1080;
@@ -12,6 +49,9 @@ const setFontSizeAndPaddingDependingOnContainerWidth = () => {
     const ratioBetweenContainerWidthAndContainerPadding = 128 / 1080;
     const ratioBetweenContainerWidthAndFontSizeForCalcInvalidOperation =
         55 / 1080;
+
+    const ratioBetweenContainerWidthAndStepOfFontSizeReducing = 20 / 1080;
+    const ratioBetweenContainerWidthAndPreventScrollPixelsBuffer = 100 / 1080;
 
     const newConatinerPadding =
         (container.clientWidth *
@@ -38,6 +78,15 @@ const setFontSizeAndPaddingDependingOnContainerWidth = () => {
         container.clientWidth *
             ratioBetweenContainerWidthAndFontSizeForCalcInvalidOperation +
         "px";
+
+    stepOfFontSizeReducing =
+        container.clientWidth *
+        ratioBetweenContainerWidthAndStepOfFontSizeReducing;
+    preventScrollPixelsBuffer =
+        container.clientWidth *
+        ratioBetweenContainerWidthAndPreventScrollPixelsBuffer;
+
+    calcScreenInputAndCalcScreenPlaceholderAdaptive();
 };
 
 window.addEventListener(
@@ -48,15 +97,12 @@ window.addEventListener(
 setFontSizeAndPaddingDependingOnContainerWidth();
 /*End of dynamic adaptive*/
 
-const calcScreenPlaceholder = document.querySelector(".input__placeholder");
-
 function blinkingAnimationFunction() {
     calcScreenPlaceholder.classList.toggle("input__placeholder_blink");
 }
 
 setInterval(blinkingAnimationFunction, 500);
 
-const calcScreenInput = document.querySelector(".input__main");
 const calcScreenResult = document.querySelector(".screen__result");
 
 const regexpListOfOperators = /[/\-+*%]/;
@@ -83,33 +129,15 @@ const evalErrorHandler = (invalidOperationName = invalidOperationsList[0]) => {
     }, 1000);
 };
 
-const arrayOfWhenToUndoFontSize = [
-    ["100px", null, "120px"],
-    ["80px", null, "100px"],
-];
 const arrayOfWhenToUndoNewLine = [];
-const minFontSize = 80;
-const maxFontSize = 120;
-const stepOfFontSizeReducing = 20;
-const preventScrollPixelsBuffer = 100;
 const calcScreenOverflovHandler = (currentFontSizeOfCalcScreenContainer) => {
     const newFontSize =
-        parseInt(currentFontSizeOfCalcScreenContainer.fontSize) -
+        parseFloat(currentFontSizeOfCalcScreenContainer.fontSize) -
         stepOfFontSizeReducing +
         "px";
     calcScreenInput.style.fontSize = newFontSize;
     calcScreenPlaceholder.style.fontSize = newFontSize;
-    switch (newFontSize) {
-        case arrayOfWhenToUndoFontSize[0][0]:
-            arrayOfWhenToUndoFontSize[0][1] =
-                calcScreenInput.textContent.length;
-            break;
-        case arrayOfWhenToUndoFontSize[1][0]:
-            arrayOfWhenToUndoFontSize[1][1] =
-                calcScreenInput.textContent.length;
-            break;
-        default:
-    }
+    arrayOfWhenToUndoFontSize.push(calcScreenInput.textContent.length);
 };
 const calcScreenOverflovMinFontSizeHandler = () => {
     let indexOfLastOperator = -1;
@@ -157,22 +185,21 @@ const undoNewLineHandler = () => {
                 .slice(lastIndexOfBr + 4 - calcScreenInput.innerHTML.length);
     }
 };
-const undoFontSizeHandler = () => {
+const undoFontSizeHandler = (currentFontSizeOfCalcScreenContainer) => {
+    if (arrayOfWhenToUndoFontSize.length === 0) {
+        return;
+    }
     if (
-        arrayOfWhenToUndoFontSize[1][1] &&
-        arrayOfWhenToUndoFontSize[1][1] > calcScreenInput.textContent.length
+        arrayOfWhenToUndoFontSize[arrayOfWhenToUndoFontSize.length - 1] >
+        calcScreenInput.textContent.length
     ) {
-        calcScreenInput.style.fontSize = arrayOfWhenToUndoFontSize[1][2];
-        calcScreenPlaceholder.style.fontSize = arrayOfWhenToUndoFontSize[1][2];
-        arrayOfWhenToUndoFontSize[1][1] = null;
-    } else if (
-        !arrayOfWhenToUndoFontSize[1][1] &&
-        arrayOfWhenToUndoFontSize[0][1] &&
-        arrayOfWhenToUndoFontSize[0][1] > calcScreenInput.textContent.length
-    ) {
-        calcScreenInput.style.fontSize = arrayOfWhenToUndoFontSize[0][2];
-        calcScreenPlaceholder.style.fontSize = arrayOfWhenToUndoFontSize[0][2];
-        arrayOfWhenToUndoFontSize[0][1] = null;
+        arrayOfWhenToUndoFontSize.pop();
+        const newFontSize =
+            parseFloat(currentFontSizeOfCalcScreenContainer.fontSize) +
+            stepOfFontSizeReducing +
+            "px";
+        calcScreenInput.style.fontSize = newFontSize;
+        calcScreenPlaceholder.style.fontSize = newFontSize;
     }
 };
 const changeFontSizeForCalcScreenInput = (flag = true) => {
@@ -184,20 +211,18 @@ const changeFontSizeForCalcScreenInput = (flag = true) => {
         if (
             calcScreenInputBoundingClientRect.width >=
                 calcScreen.clientWidth - preventScrollPixelsBuffer &&
-            parseInt(currentFontSizeOfCalcScreenContainer.fontSize) >
-                minFontSize
+            arrayOfWhenToUndoFontSize.length < 2
         ) {
             calcScreenOverflovHandler(currentFontSizeOfCalcScreenContainer);
         } else if (
             calcScreenInputBoundingClientRect.width >=
                 calcScreen.clientWidth - preventScrollPixelsBuffer &&
-            parseInt(currentFontSizeOfCalcScreenContainer.fontSize) ===
-                minFontSize
+            arrayOfWhenToUndoFontSize.length === 2
         ) {
             calcScreenOverflovMinFontSizeHandler();
         }
     } else {
-        undoFontSizeHandler();
+        undoFontSizeHandler(currentFontSizeOfCalcScreenContainer);
         undoNewLineHandler();
     }
 };
@@ -409,10 +434,11 @@ const equalButtonHandler = () => {
                 isFirstOperatorInExpression = false;
                 calcScreenInput.classList.add("input__main_green");
                 changeInputColor = true;
-                arrayOfWhenToUndoFontSize[0][1] = null;
-                arrayOfWhenToUndoFontSize[1][1] = null;
-                calcScreenInput.style.fontSize = maxFontSize + "px";
-                calcScreenPlaceholder.style.fontSize = maxFontSize + "px";
+                arrayOfWhenToUndoFontSize.length = 0;
+                arrayOfWhenToUndoNewLine.length = 0;
+                calcScreenInput.style.fontSize = calcScreen.style.fontSize;
+                calcScreenPlaceholder.style.fontSize =
+                    calcScreen.style.fontSize;
             } catch (error) {
                 evalErrorHandler();
             }
@@ -425,10 +451,10 @@ const clearButtonHandler = () => {
     calcScreenResult.textContent = "";
     calcScreenInput.textContent = "";
     toolbarDeleteImg.src = "assets/delete.png";
-    arrayOfWhenToUndoFontSize[0][1] = null;
-    arrayOfWhenToUndoFontSize[1][1] = null;
-    calcScreenInput.style.fontSize = maxFontSize + "px";
-    calcScreenPlaceholder.style.fontSize = maxFontSize + "px";
+    arrayOfWhenToUndoFontSize = [];
+    arrayOfWhenToUndoNewLine = [];
+    calcScreenInput.style.fontSize = calcScreen.style.fontSize;
+    calcScreenPlaceholder.style.fontSize = calcScreen.style.fontSize;
 };
 
 const avoidInvalidNumbersAndOperations = (temporaryConcatChar) => {

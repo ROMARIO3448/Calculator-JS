@@ -46,9 +46,9 @@ body {
 }
 
 ._container {
-    max-width: 952px;
+    max-width: 1080px;
     margin: 0px auto;
-    box-sizing: content-box;
+    box-sizing: border-box;
 }
 
 /* ------------------------------------------------------------------- */
